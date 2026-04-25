@@ -1,0 +1,128 @@
+{% extends 'products/base.html' %}
+
+{% block title %}Lista de Produtos - Sistema de Promoções{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Meus Produtos</h1>
+            <a href="{% url 'products:create' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Novo Produto
+            </a>
+        </div>
+
+        <!-- Filtros -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form method="get" class="row g-3">
+                    <div class="col-md-4">
+                        <label for="q" class="form-label">Buscar</label>
+                        <input type="text" class="form-control" id="q" name="q" 
+                               value="{{ query }}" placeholder="Nome, descrição ou categoria">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="marketplace" class="form-label">Marketplace</label>
+                        <select class="form-select" id="marketplace" name="marketplace">
+                            <option value="">Todos</option>
+                            {% for value, label in marketplace_choices %}
+                                <option value="{{ value }}" {% if marketplace_filter == value %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="status" class="form-label">Status</label>
+                        <select class="form-select" id="status" name="status">
+                            <option value="">Todos</option>
+                            {% for value, label in status_choices %}
+                                <option value="{{ value }}" {% if status_filter == value %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">&nbsp;</label>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-outline-primary">Filtrar</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Lista de Produtos -->
+        {% if products %}
+            <div class="row">
+                {% for product in products %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ product.name }}</h5>
+                                <p class="card-text">
+                                    <small class="text-muted">{{ product.get_marketplace_display }}</small><br>
+                                    {% if product.category %}
+                                        <span class="badge bg-secondary">{{ product.category }}</span>
+                                    {% endif %}
+                                </p>
+                                
+                                <div class="mb-2">
+                                    {% if product.notify_whatsapp %}
+                                        <span class="badge bg-success">WhatsApp</span>
+                                    {% endif %}
+                                    {% if product.notify_telegram %}
+                                        <span class="badge bg-info">Telegram</span>
+                                    {% endif %}
+                                    {% if product.notify_promotion %}
+                                        <span class="badge bg-warning">Monitorar Promoções</span>
+                                    {% endif %}
+                                </div>
+
+                                {% if product.price_target %}
+                                    <p class="card-text">
+                                        <strong>Preço Alvo:</strong> R$ {{ product.price_target }}
+                                    </p>
+                                {% endif %}
+
+                                <p class="card-text">
+                                    <small class="text-muted">
+                                        Status: 
+                                        <span class="badge {% if product.status == 'active' %}bg-success{% else %}bg-danger{% endif %}">
+                                            {{ product.get_status_display }}
+                                        </span>
+                                    </small>
+                                </p>
+                            </div>
+                            <div class="card-footer bg-transparent">
+                                <div class="btn-group w-100" role="group">
+                                    <a href="{% url 'products:detail' product.pk %}" 
+                                       class="btn btn-outline-primary btn-sm">Ver</a>
+                                    <a href="{% url 'products:update' product.pk %}" 
+                                       class="btn btn-outline-secondary btn-sm">Editar</a>
+                                    <a href="{% url 'products:delete' product.pk %}" 
+                                       class="btn btn-outline-danger btn-sm">Excluir</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <h3>Nenhum produto encontrado</h3>
+                <p class="text-muted">
+                    {% if query or marketplace_filter or status_filter %}
+                        Tente ajustar os filtros ou 
+                        <a href="{% url 'products:list' %}">limpar todos os filtros</a>.
+                    {% else %}
+                        <a href="{% url 'products:create' %}">Cadastre seu primeiro produto</a> 
+                        para começar a monitorar promoções.
+                    {% endif %}
+                </p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

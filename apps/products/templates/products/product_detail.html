@@ -1,0 +1,117 @@
+{% extends 'products/base.html' %}
+
+{% block title %}{{ product.name }} - Sistema de Promoções{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3>{{ product.name }}</h3>
+                <div>
+                    <a href="{% url 'products:update' product.pk %}" class="btn btn-outline-primary btn-sm">
+                        Editar
+                    </a>
+                    <a href="{% url 'products:delete' product.pk %}" class="btn btn-outline-danger btn-sm">
+                        Excluir
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Marketplace:</strong> {{ product.get_marketplace_display }}</p>
+                        <p><strong>Status:</strong> 
+                            <span class="badge {% if product.status == 'active' %}bg-success{% else %}bg-danger{% endif %}">
+                                {{ product.get_status_display }}
+                            </span>
+                        </p>
+                        {% if product.category %}
+                            <p><strong>Categoria:</strong> {{ product.category }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        {% if product.price_target %}
+                            <p><strong>Preço Alvo:</strong> R$ {{ product.price_target }}</p>
+                        {% endif %}
+                        <p><strong>Cadastrado em:</strong> {{ product.created_at|date:"d/m/Y H:i" }}</p>
+                        <p><strong>Última atualização:</strong> {{ product.updated_at|date:"d/m/Y H:i" }}</p>
+                    </div>
+                </div>
+
+                {% if product.description %}
+                    <div class="mt-3">
+                        <h5>Descrição</h5>
+                        <p>{{ product.description|linebreaks }}</p>
+                    </div>
+                {% endif %}
+
+                <div class="mt-3">
+                    <h5>URL do Produto</h5>
+                    <div class="input-group">
+                        <input type="text" class="form-control" value="{{ product.url }}" readonly>
+                        <a href="{{ product.url }}" target="_blank" class="btn btn-outline-secondary">
+                            Abrir
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Configurações de Notificação</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" 
+                               {% if product.notify_whatsapp %}checked{% endif %} disabled>
+                        <label class="form-check-label">
+                            Notificar no WhatsApp
+                        </label>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" 
+                               {% if product.notify_telegram %}checked{% endif %} disabled>
+                        <label class="form-check-label">
+                            Notificar no Telegram
+                        </label>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" 
+                               {% if product.notify_promotion %}checked{% endif %} disabled>
+                        <label class="form-check-label">
+                            Monitorar Promoções
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5>Informações do Sistema</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>ID:</strong> {{ product.pk }}</p>
+                <p><strong>Cadastrado por:</strong> {{ product.created_by.username }}</p>
+                <p><strong>Data de Cadastro:</strong> {{ product.created_at|date:"d/m/Y H:i" }}</p>
+                <p><strong>Última Atualização:</strong> {{ product.updated_at|date:"d/m/Y H:i" }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    <a href="{% url 'products:list' %}" class="btn btn-secondary">
+        ← Voltar para Lista
+    </a>
+</div>
+{% endblock %}

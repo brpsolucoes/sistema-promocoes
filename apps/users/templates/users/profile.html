@@ -1,0 +1,71 @@
+{% extends 'products/base.html' %}
+
+{% block title %}Meu Perfil - Sistema de Promoções{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3>Meu Perfil</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Nome de usuário:</strong> {{ user.username }}</p>
+                        <p><strong>Email:</strong> {{ user.email }}</p>
+                        <p><strong>Nome completo:</strong> {{ user.get_full_name|default:"Não informado" }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Staff:</strong> 
+                            {% if user.is_staff %}
+                                <span class="badge bg-success">Sim</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Não</span>
+                            {% endif %}
+                        </p>
+                        <p><strong>Superusuário:</strong> 
+                            {% if user.is_superuser %}
+                                <span class="badge bg-success">Sim</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Não</span>
+                            {% endif %}
+                        </p>
+                        <p><strong>Data de cadastro:</strong> {{ user.date_joined|date:"d/m/Y H:i" }}</p>
+                        <p><strong>Último login:</strong> {{ user.last_login|date:"d/m/Y H:i"|default:"Nunca" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Ações Rápidas</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'products:list' %}" class="btn btn-primary">
+                        Meus Produtos
+                    </a>
+                    <a href="{% url 'products:create' %}" class="btn btn-outline-primary">
+                        Novo Produto
+                    </a>
+                    {% if user.is_staff %}
+                        <a href="/admin/" class="btn btn-outline-secondary">
+                            Painel Admin
+                        </a>
+                    {% endif %}
+                    <form method="post" action="{% url 'users:logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-danger w-100">
+                            Sair
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
